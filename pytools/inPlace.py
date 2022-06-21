@@ -1,17 +1,11 @@
 
-# Built-In Python
-import shutil
-import uuid
-from functools import wraps
-import inspect
-from pathlib import Path
-
 # XdMind
-from xd_pytools.decoratorBase import DecoratorBase
+from pytools.decoratorBase import DecoratorBase
 
 
 class _InPlaceOption(DecoratorBase):
     VALID_RETURN_TYPES = ['auto', 'AudioFile', 'ndarray', 'XdVideo']
+
     def __init__(self, fget, *args, returns='auto', inPlaceAttrs=None, **kwargs):
         super().__init__(fget, *args, **kwargs)
 
