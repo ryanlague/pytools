@@ -1,9 +1,9 @@
 
-# XdMind
-import copy
-
 from pytools.decoratorBase import DecoratorBase
 
+from decohints import decohints
+
+import copy
 
 class _InPlaceOption(DecoratorBase):
     # TODO: Make all return types valid (or at least remove the custom ones from this list
@@ -37,7 +37,7 @@ class _InPlaceOption(DecoratorBase):
             #       This is an annoying assumption to remember AND it is slow (if we are working in place, we can avoid
             #       unnecessary copies)
             use_inPlace = (kwargs.get('inPlace') or ('inPlace' not in kwargs and self.defaultInPlace))
-            inst = instance if use_inPlace else copy.copy(instance)
+            inst = instance if use_inPlace else copy.deepcopy(instance)
             res = self.fget(inst, *args, **kwargs)
             return_type = self.getReturnType(instance)
             if type(res).__name__ == return_type or return_type == 'unknown':
@@ -64,7 +64,7 @@ class _InPlaceOption(DecoratorBase):
         else:
             raise Exception(f"No fget")
 
-
+@decohints  # decohints fixes the issue in PyCharm where @wraps doesn't work with arg hints
 def InPlaceOption(_function=None, returns='auto'):
     """ We wrap the class above so it can be used either with or without arguments"""
     if _function:

@@ -4,6 +4,8 @@
 from functools import wraps
 import inspect
 
+# Third-Party
+from decohints import decohints
 
 class DecoratorBase:
     def __init__(self, fget=None, fset=None, fdel=None, doc=None):
@@ -28,6 +30,7 @@ class DecoratorBase:
     def __repr__(self):
         return f"<{self.__class__.__name__} Decorator>"
 
+    @decohints
     def __call__(self, instance):
         @wraps(self.fget)
         def wrapper(*args, **kwargs):
