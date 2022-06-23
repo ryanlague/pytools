@@ -8,7 +8,6 @@ setup(
     author_email='ryanlague@hotmail.com',
     packages=find_packages(),
     install_requires=[
-        'pandas',
-        'pytest'
+        'pandas'
     ]
 )
