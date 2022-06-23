@@ -1,9 +1,12 @@
 
 # XdMind
+import copy
+
 from pytools.decoratorBase import DecoratorBase
 
 
 class _InPlaceOption(DecoratorBase):
+    # TODO: Make all return types valid (or at least remove the custom ones from this list
     VALID_RETURN_TYPES = ['auto', 'AudioFile', 'ndarray', 'XdVideo']
 
     def __init__(self, fget, *args, returns='auto', inPlaceAttrs=None, **kwargs):
@@ -27,15 +30,19 @@ class _InPlaceOption(DecoratorBase):
         else:
             return self._returns
 
-
     def decorator(self, instance, *args, **kwargs):
         if self.fget:
-            res = self.fget(instance, *args, **kwargs)
+            # TODO: We should determine if we are running inPlace before running the function
+            #       The way it works now, the decorated function has to make a copy (i.e. not function inPlace)
+            #       This is an annoying assumption to remember AND it is slow (if we are working in place, we can avoid
+            #       unnecessary copies)
+            use_inPlace = (kwargs.get('inPlace') or ('inPlace' not in kwargs and self.defaultInPlace))
+            inst = instance if use_inPlace else copy.copy(instance)
+            res = self.fget(inst, *args, **kwargs)
             return_type = self.getReturnType(instance)
             if type(res).__name__ == return_type or return_type == 'unknown':
-                use_inPlace = ('inPlace' in kwargs and kwargs.get('inPlace')
-                               or ('inPlace' not in kwargs and self.defaultInPlace))
                 if use_inPlace:
+                    # TODO: Generalize this so we don't need to know so much about the return_type
                     if return_type == 'AudioFile':
                         # For each requested attr (namely, 'res')
                         # Set the instance attr to the result
